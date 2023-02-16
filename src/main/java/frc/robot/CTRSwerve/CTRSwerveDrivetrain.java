@@ -2,6 +2,8 @@ package frc.robot.CTRSwerve;
 
 import com.ctre.phoenixpro.BaseStatusSignalValue;
 import com.ctre.phoenixpro.hardware.Pigeon2;
+
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,6 +26,7 @@ public class CTRSwerveDrivetrain {
     private Translation2d[] m_moduleLocations;
     private OdometryThread m_odometryThread;
     private Field2d m_field;
+    private PIDController m_turnPid;
 
     /* Perform swerve module updates in a separate thread to minimize latency */
     private class OdometryThread extends Thread {
@@ -75,6 +78,7 @@ public class CTRSwerveDrivetrain {
                 SmartDashboard.putNumber("Failed Daqs", FailedDaqs);
                 SmartDashboard.putNumber("X Pos", m_odometry.getPoseMeters().getX());
                 SmartDashboard.putNumber("Y Pos", m_odometry.getPoseMeters().getY());
+                SmartDashboard.putNumber("Angle", m_odometry.getPoseMeters().getRotation().getDegrees());
             }
         }
     }
@@ -103,6 +107,8 @@ public class CTRSwerveDrivetrain {
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
 
+        m_turnPid = new PIDController(driveTrainConstants.TurnKp, 0, driveTrainConstants.TurnKd);
+
         m_odometryThread = new OdometryThread();
         m_odometryThread.start();
     }
@@ -120,6 +126,17 @@ public class CTRSwerveDrivetrain {
 
     public void driveFieldCentric(ChassisSpeeds speeds) {
         var roboCentric = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_pigeon2.getRotation2d());
+        var swerveStates = m_kinematics.toSwerveModuleStates(roboCentric);
+        for (int i = 0; i < ModuleCount; ++i) {
+            m_modules[i].apply(swerveStates[i]);
+        }
+    }
+
+    public void driveFullyFieldCentric(double xSpeeds, double ySpeeds, Rotation2d targetAngle) {
+        var currentAngle = m_pigeon2.getRotation2d();
+        double rotationalSpeed = m_turnPid.calculate(currentAngle.getRadians(), targetAngle.getRadians());
+
+        var roboCentric = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeeds, ySpeeds, rotationalSpeed, m_pigeon2.getRotation2d());
         var swerveStates = m_kinematics.toSwerveModuleStates(roboCentric);
         for (int i = 0; i < ModuleCount; ++i) {
             m_modules[i].apply(swerveStates[i]);

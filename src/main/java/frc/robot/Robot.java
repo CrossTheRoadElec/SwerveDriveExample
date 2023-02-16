@@ -5,6 +5,8 @@
 package frc.robot;
 
 import com.ctre.phoenixpro.configs.Slot0Configs;
+
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -25,7 +27,7 @@ import frc.robot.CTRSwerve.SwerveModuleConstants;
 public class Robot extends TimedRobot {
 
     SwerveDriveTrainConstants drivetrain =
-            new SwerveDriveTrainConstants().withPigeon2Id(1).withCANbusName("Fred");
+            new SwerveDriveTrainConstants().withPigeon2Id(1).withCANbusName("Fred").withTurnKp(5);
 
     Slot0Configs steerGains = new Slot0Configs();
     Slot0Configs driveGains = new Slot0Configs();
@@ -112,6 +114,7 @@ public class Robot extends TimedRobot {
     CANdleManager m_candleManager =
             new CANdleManager(
                     "Fred", posY, posX, negY, negX, frontCandle, leftCandle, rightCandle, backCandle);
+    Rotation2d m_lastTargetAngle = new Rotation2d();
 
     /**
      * This function is run when the robot is first started up and should be used for any
@@ -125,13 +128,15 @@ public class Robot extends TimedRobot {
         double leftY = -m_joystick.getLeftY();
         double leftX = m_joystick.getLeftX();
         double rightX = m_joystick.getRightX();
+        double rightY = -m_joystick.getRightY();
 
         if (Math.abs(leftY) < 0.1 && Math.abs(leftX) < 0.1) {
             leftY = 0;
             leftX = 0;
         }
-        if (Math.abs(rightX) < 0.1) {
+        if (Math.abs(rightX) < 0.1 && Math.abs(rightY) < 0.1) {
             rightX = 0;
+            rightY = 0;
         }
 
         var directions = new ChassisSpeeds();
@@ -143,7 +148,11 @@ public class Robot extends TimedRobot {
         if (m_joystick.getYButton()) {
             m_drivetrain.driveStopMotion();
         } else {
-            m_drivetrain.driveFieldCentric(directions);
+            /* If we're fully field centric, we need to be pretty deflected to target an angle */
+            if(Math.abs(rightX) > 0.7 || Math.abs(rightY) > 0.7) {
+                m_lastTargetAngle = new Rotation2d(rightY, -rightX);
+            }
+            m_drivetrain.driveFullyFieldCentric(leftY * 1, leftX * -1, m_lastTargetAngle);
         }
 
         if (m_joystick.getAButton()) {
@@ -161,7 +170,9 @@ public class Robot extends TimedRobot {
     public void autonomousPeriodic() {}
 
     @Override
-    public void teleopInit() {}
+    public void teleopInit() {
+        m_lastTargetAngle = m_drivetrain.getPoseMeters().getRotation();
+    }
 
     @Override
     public void teleopPeriodic() {}
