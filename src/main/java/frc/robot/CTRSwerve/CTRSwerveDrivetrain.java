@@ -10,6 +10,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -21,6 +22,7 @@ public class CTRSwerveDrivetrain {
     private SwerveDriveKinematics m_kinematics;
     private SwerveDriveOdometry m_odometry;
     private SwerveModulePosition[] m_modulePositions;
+    private Translation2d[] m_moduleLocations;
     private OdometryThread m_odometryThread;
     private Field2d m_field;
 
@@ -71,6 +73,9 @@ public class CTRSwerveDrivetrain {
 
                 m_odometry.update(Rotation2d.fromDegrees(yawDegrees), m_modulePositions);
                 m_field.setRobotPose(m_odometry.getPoseMeters());
+
+                SmartDashboard.putNumber("Successful Daqs", SuccessfulDaqs);
+                SmartDashboard.putNumber("Failed Daqs", FailedDaqs);
             }
         }
     }
@@ -83,18 +88,18 @@ public class CTRSwerveDrivetrain {
 
         m_modules = new CTRSwerveModule[ModuleCount];
         m_modulePositions = new SwerveModulePosition[ModuleCount];
-        Translation2d[] locations = new Translation2d[ModuleCount];
+        m_moduleLocations = new Translation2d[ModuleCount];
 
         int iteration = 0;
         for (SwerveModuleConstants module : modules)
         {
             m_modules[iteration] = new CTRSwerveModule(module, driveTrainConstants.CANbusName);
-            locations[iteration] = new Translation2d(module.LocationX, module.LocationY);
+            m_moduleLocations[iteration] = new Translation2d(module.LocationX, module.LocationY);
             m_modulePositions[iteration] = m_modules[iteration].getPosition();
 
             iteration++;
         }
-        m_kinematics = new SwerveDriveKinematics(locations);
+        m_kinematics = new SwerveDriveKinematics(m_moduleLocations);
         m_odometry = new SwerveDriveOdometry(m_kinematics, m_pigeon2.getRotation2d(), getSwervePositions());
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
@@ -128,7 +133,12 @@ public class CTRSwerveDrivetrain {
     }
     public void driveStopMotion()
     {
-        
+        /* Point every module toward (0,0) to make it close to a X configuration */
+        for(int i = 0; i < ModuleCount; ++i)
+        {
+            var angle = m_moduleLocations[i].getAngle();
+            m_modules[i].apply(new SwerveModuleState(0, angle));
+        }
     }
     public void seedFieldRelative()
     {

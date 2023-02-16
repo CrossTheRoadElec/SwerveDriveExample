@@ -141,7 +141,13 @@ public class Robot extends TimedRobot {
     directions.vxMetersPerSecond = leftY * 1;
     directions.vyMetersPerSecond = leftX * -1;
     directions.omegaRadiansPerSecond = rightX * -10;
-    m_drivetrain.driveFieldCentric(directions);
+
+    /* If we're pressing Y, don't move, otherwise do normal movement */
+    if(m_joystick.getYButton()) {
+      m_drivetrain.driveStopMotion();
+    } else {
+      m_drivetrain.driveFieldCentric(directions);
+    }
 
     if(m_joystick.getAButton()) {
       m_drivetrain.seedFieldRelative();
