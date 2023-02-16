@@ -9,10 +9,12 @@ public class CANdleConstants {
         this.id = id;
         return this;
     }
+
     public CANdleConstants withLocationX(double locationX) {
         this.locationX = locationX;
         return this;
     }
+
     public CANdleConstants withLocationY(double locationY) {
         this.locationY = locationY;
         return this;

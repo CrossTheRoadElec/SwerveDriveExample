@@ -9,7 +9,6 @@ import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenixpro.hardware.CANcoder;
 import com.ctre.phoenixpro.hardware.TalonFX;
 import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -32,14 +31,13 @@ public class CTRSwerveModule {
 
     private SwerveModulePosition m_internalState = new SwerveModulePosition();
 
-    public CTRSwerveModule(SwerveModuleConstants constants, String canbusName)
-    {
+    public CTRSwerveModule(SwerveModuleConstants constants, String canbusName) {
         m_driveMotor = new TalonFX(constants.DriveMotorId, canbusName);
         m_steerMotor = new TalonFX(constants.SteerMotorId, canbusName);
         m_cancoder = new CANcoder(constants.CANcoderId, canbusName);
 
         TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
-        
+
         talonConfigs.Slot0 = constants.DriveMotorGains;
         m_driveMotor.getConfigurator().apply(talonConfigs);
 
@@ -49,7 +47,8 @@ public class CTRSwerveModule {
         talonConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
         talonConfigs.Feedback.RotorToSensorRatio = constants.SteerMotorGearRatio;
 
-        talonConfigs.ClosedLoopGeneral.ContinuousWrap = true; // Enable continuous wrap for swerve modules
+        talonConfigs.ClosedLoopGeneral.ContinuousWrap =
+                true; // Enable continuous wrap for swerve modules
         m_steerMotor.getConfigurator().apply(talonConfigs);
 
         CANcoderConfiguration cancoderConfigs = new CANcoderConfiguration();
@@ -73,8 +72,7 @@ public class CTRSwerveModule {
         m_driveRotationsPerMeter = rotationsPerWheelRotation / metersPerWheelRotation;
     }
 
-    public SwerveModulePosition getPosition()
-    {
+    public SwerveModulePosition getPosition() {
         /* Refresh all signals */
         m_drivePosition.refresh();
         m_driveVelocity.refresh();
@@ -82,8 +80,12 @@ public class CTRSwerveModule {
         m_steerVelocity.refresh();
 
         /* Now latency-compensate our signals */
-        double drive_rot = m_drivePosition.getValue() + (m_driveVelocity.getValue() * m_drivePosition.getTimestamp().getLatency());
-        double angle_rot = m_steerPosition.getValue() + (m_steerVelocity.getValue() * m_steerPosition.getTimestamp().getLatency());
+        double drive_rot =
+                m_drivePosition.getValue()
+                        + (m_driveVelocity.getValue() * m_drivePosition.getTimestamp().getLatency());
+        double angle_rot =
+                m_steerPosition.getValue()
+                        + (m_steerVelocity.getValue() * m_steerPosition.getTimestamp().getLatency());
 
         /* And push them into a SwerveModuleState object to return */
         m_internalState.distanceMeters = drive_rot / m_driveRotationsPerMeter;
@@ -93,8 +95,7 @@ public class CTRSwerveModule {
         return m_internalState;
     }
 
-    public void apply(SwerveModuleState state)
-    {
+    public void apply(SwerveModuleState state) {
         var optimized = SwerveModuleState.optimize(state, m_internalState.angle);
 
         double angleToSetDeg = optimized.angle.getRotations();
@@ -103,5 +104,7 @@ public class CTRSwerveModule {
         m_driveMotor.setControl(m_velocitySetter.withVelocity(velocityToSet));
     }
 
-    BaseStatusSignalValue[] getSignals() { return m_signals; }
+    BaseStatusSignalValue[] getSignals() {
+        return m_signals;
+    }
 }
