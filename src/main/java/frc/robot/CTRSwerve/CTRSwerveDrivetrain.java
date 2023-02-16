@@ -1,0 +1,145 @@
+package frc.robot.CTRSwerve;
+
+import com.ctre.phoenixpro.BaseStatusSignalValue;
+import com.ctre.phoenixpro.hardware.Pigeon2;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+public class CTRSwerveDrivetrain {
+    private final int ModuleCount;
+
+    private CTRSwerveModule[] m_modules;
+    private Pigeon2 m_pigeon2;
+    private SwerveDriveKinematics m_kinematics;
+    private SwerveDriveOdometry m_odometry;
+    private SwerveModulePosition[] m_modulePositions;
+    private OdometryThread m_odometryThread;
+    private Field2d m_field;
+
+    /* Perform swerve module updates in a separate thread to minimize latency */
+    private class OdometryThread extends Thread {
+        private BaseStatusSignalValue[] m_allSignals;
+        public int SuccessfulDaqs = 0;
+        public int FailedDaqs = 0;
+
+        public OdometryThread() {
+            super();
+            // 4 signals for each module + 2 for Pigeon2
+            m_allSignals = new BaseStatusSignalValue[(ModuleCount * 4) + 2];
+            for(int i = 0; i < ModuleCount; ++i)
+            {
+                var signals = m_modules[i].getSignals();
+                m_allSignals[(i*4) + 0] = signals[0];
+                m_allSignals[(i*4) + 1] = signals[1];
+                m_allSignals[(i*4) + 2] = signals[2];
+                m_allSignals[(i*4) + 3] = signals[3];
+            }
+            m_allSignals[m_allSignals.length - 2] = m_pigeon2.getYaw();
+            m_allSignals[m_allSignals.length - 1] = m_pigeon2.getAngularVelocityZ();
+        }
+
+        public void run()
+        {
+            /* Run as fast as possible, our signals will control the timing */
+            while(true)
+            {
+                /* Synchronously wait for all signals in drivetrain */
+                BaseStatusSignalValue.waitForAll(0.1, m_allSignals);
+
+                /* Get status of first element */
+                if(m_allSignals[0].getError().isOK()) {
+                    SuccessfulDaqs++;
+                } else {
+                    FailedDaqs++;
+                }
+
+                /* Now update odometry */
+                for(int i = 0; i < ModuleCount; ++i)
+                {
+                    m_modulePositions[i] = m_modules[i].getPosition();
+                }
+                // Assume Pigeon2 is flat-and-level so latency compensation can be performed
+                double yawDegrees = BaseStatusSignalValue.getLatencyCompensatedValue(m_pigeon2.getYaw(), m_pigeon2.getAngularVelocityZ());
+
+                m_odometry.update(Rotation2d.fromDegrees(yawDegrees), m_modulePositions);
+                m_field.setRobotPose(m_odometry.getPoseMeters());
+            }
+        }
+    }
+
+    public CTRSwerveDrivetrain(SwerveDriveTrainConstants driveTrainConstants, SwerveModuleConstants ... modules)
+    {
+        ModuleCount = modules.length;
+
+        m_pigeon2 = new Pigeon2(driveTrainConstants.Pigeon2Id, driveTrainConstants.CANbusName);
+
+        m_modules = new CTRSwerveModule[ModuleCount];
+        m_modulePositions = new SwerveModulePosition[ModuleCount];
+        Translation2d[] locations = new Translation2d[ModuleCount];
+
+        int iteration = 0;
+        for (SwerveModuleConstants module : modules)
+        {
+            m_modules[iteration] = new CTRSwerveModule(module, driveTrainConstants.CANbusName);
+            locations[iteration] = new Translation2d(module.LocationX, module.LocationY);
+            m_modulePositions[iteration] = m_modules[iteration].getPosition();
+
+            iteration++;
+        }
+        m_kinematics = new SwerveDriveKinematics(locations);
+        m_odometry = new SwerveDriveOdometry(m_kinematics, m_pigeon2.getRotation2d(), getSwervePositions());
+        m_field = new Field2d();
+        SmartDashboard.putData("Field", m_field);
+
+        m_odometryThread = new OdometryThread();
+        m_odometryThread.start();
+    }
+
+    private SwerveModulePosition[] getSwervePositions()
+    {
+        return m_modulePositions;
+    }
+
+    public void driveRobotCentric(ChassisSpeeds speeds)
+    {
+        var swerveStates = m_kinematics.toSwerveModuleStates(speeds);
+        for(int i = 0; i < ModuleCount; ++i)
+        {
+            m_modules[i].apply(swerveStates[i]);
+        }
+    }
+
+    public void driveFieldCentric(ChassisSpeeds speeds)
+    {
+        var roboCentric = ChassisSpeeds.fromFieldRelativeSpeeds(speeds, m_pigeon2.getRotation2d());
+        var swerveStates = m_kinematics.toSwerveModuleStates(roboCentric);
+        for(int i = 0; i < ModuleCount; ++i)
+        {
+            m_modules[i].apply(swerveStates[i]);
+        }
+    }
+    public void driveStopMotion()
+    {
+        
+    }
+    public void seedFieldRelative()
+    {
+        m_pigeon2.setYaw(0);
+    }
+
+    public Pose2d getPoseMeters()
+    {
+        return m_odometry.getPoseMeters();
+    }
+
+    public double getSuccessfulDaqs() { return m_odometryThread.SuccessfulDaqs; }
+    public double getFailedDaqs() { return m_odometryThread.FailedDaqs; }
+}
