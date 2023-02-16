@@ -1,4 +1,5 @@
-# Swerve Module Latency Compensation
+# Swerve Drive Robot
 
-This example details how a team would go about using Phoenix Pro to implement Latency Compensation on a swerve module.
-This can be used to achieve greater accuracy from the odometry of a module, which typically results in more consistent Autonomous routines.
+This contains the code for the Swerve Drive robot, using SDS MK4 modules along with 4 CANdles for underglow on each side.
+
+![Swerve Robot](images/SwerveBot.jpg)
