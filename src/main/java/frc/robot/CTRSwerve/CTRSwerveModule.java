@@ -4,6 +4,7 @@ import com.ctre.phoenixpro.BaseStatusSignalValue;
 import com.ctre.phoenixpro.StatusSignalValue;
 import com.ctre.phoenixpro.configs.CANcoderConfiguration;
 import com.ctre.phoenixpro.configs.TalonFXConfiguration;
+import com.ctre.phoenixpro.configs.TorqueCurrentConfigs;
 import com.ctre.phoenixpro.controls.PositionVoltage;
 import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
 import com.ctre.phoenixpro.hardware.CANcoder;
@@ -39,7 +40,12 @@ public class CTRSwerveModule {
         TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
 
         talonConfigs.Slot0 = constants.DriveMotorGains;
+        talonConfigs.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
+        talonConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
         m_driveMotor.getConfigurator().apply(talonConfigs);
+        
+        /* Undo changes for torqueCurrent */
+        talonConfigs.TorqueCurrent = new TorqueCurrentConfigs();
 
         talonConfigs.Slot0 = constants.SteerMotorGains;
         // Modify configuration to use remote CANcoder fused

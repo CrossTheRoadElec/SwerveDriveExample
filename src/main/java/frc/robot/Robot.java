@@ -37,7 +37,7 @@ public class Robot extends TimedRobot {
     }
 
     /**
-     * Note: WPI's coordinate system is Y forward, X to the left so make sure all locations are with
+     * Note: WPI's coordinate system is X forward, Y to the left so make sure all locations are with
      * respect to this coordinate system
      *
      * <p>This particular drive base is 22" x 22"
@@ -53,7 +53,8 @@ public class Robot extends TimedRobot {
                     .withLocationX(Units.inchesToMeters(22.0 / 2.0))
                     .withLocationY(Units.inchesToMeters(-22.0 / 2.0))
                     .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains);
+                    .withDriveMotorGains(driveGains)
+                    .withSlipCurrent(17);
 
     SwerveModuleConstants frontLeft =
             new SwerveModuleConstants()
@@ -66,7 +67,8 @@ public class Robot extends TimedRobot {
                     .withLocationX(Units.inchesToMeters(22.0 / 2.0))
                     .withLocationY(Units.inchesToMeters(22.0 / 2.0))
                     .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains);
+                    .withDriveMotorGains(driveGains)
+                    .withSlipCurrent(17);
     SwerveModuleConstants backRight =
             new SwerveModuleConstants()
                     .withDriveMotorId(5)
@@ -78,7 +80,8 @@ public class Robot extends TimedRobot {
                     .withLocationX(Units.inchesToMeters(-22.0 / 2.0))
                     .withLocationY(Units.inchesToMeters(-22.0 / 2.0))
                     .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains);
+                    .withDriveMotorGains(driveGains)
+                    .withSlipCurrent(17);
     SwerveModuleConstants backLeft =
             new SwerveModuleConstants()
                     .withDriveMotorId(7)
@@ -90,7 +93,8 @@ public class Robot extends TimedRobot {
                     .withLocationX(Units.inchesToMeters(-22.0 / 2.0))
                     .withLocationY(Units.inchesToMeters(22.0 / 2.0))
                     .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains);
+                    .withDriveMotorGains(driveGains)
+                    .withSlipCurrent(17);
 
     CTRSwerveDrivetrain m_drivetrain =
             new CTRSwerveDrivetrain(drivetrain, frontLeft, frontRight, backLeft, backRight);

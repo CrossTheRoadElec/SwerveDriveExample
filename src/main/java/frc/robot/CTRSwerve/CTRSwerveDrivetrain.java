@@ -73,6 +73,8 @@ public class CTRSwerveDrivetrain {
 
                 SmartDashboard.putNumber("Successful Daqs", SuccessfulDaqs);
                 SmartDashboard.putNumber("Failed Daqs", FailedDaqs);
+                SmartDashboard.putNumber("X Pos", m_odometry.getPoseMeters().getX());
+                SmartDashboard.putNumber("Y Pos", m_odometry.getPoseMeters().getY());
             }
         }
     }
