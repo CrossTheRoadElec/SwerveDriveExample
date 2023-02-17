@@ -120,6 +120,8 @@ public class Robot extends TimedRobot {
 
         if (m_joystick.getAButton()) {
             m_drivetrain.seedFieldRelative();
+            // Make us target forward now to avoid jumps
+            m_lastTargetAngle = new Rotation2d();
         }
 
         m_candleManager.orient(m_drivetrain.getPoseMeters().getRotation());
