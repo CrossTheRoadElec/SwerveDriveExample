@@ -107,6 +107,7 @@ public class CTRSwerveDrivetrain {
         SmartDashboard.putData("Field", m_field);
 
         m_turnPid = new PIDController(driveTrainConstants.TurnKp, 0, driveTrainConstants.TurnKd);
+        m_turnPid.enableContinuousInput(-Math.PI, Math.PI);
 
         m_odometryThread = new OdometryThread();
         m_odometryThread.start();
