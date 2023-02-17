@@ -18,10 +18,12 @@ public class SwerveDriveTrainConstants {
         this.CANbusName = name;
         return this;
     }
+
     public SwerveDriveTrainConstants withTurnKp(double TurnKp) {
         this.TurnKp = TurnKp;
         return this;
     }
+
     public SwerveDriveTrainConstants withTurnKd(double TurnKd) {
         this.TurnKd = TurnKd;
         return this;

@@ -43,7 +43,7 @@ public class CTRSwerveModule {
         talonConfigs.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
         talonConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
         m_driveMotor.getConfigurator().apply(talonConfigs);
-        
+
         /* Undo changes for torqueCurrent */
         talonConfigs.TorqueCurrent = new TorqueCurrentConfigs();
 

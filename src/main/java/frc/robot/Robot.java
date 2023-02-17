@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenixpro.configs.Slot0Configs;
-
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
@@ -15,6 +14,7 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 import frc.robot.CTRSwerve.CANdleConstants;
 import frc.robot.CTRSwerve.CANdleManager;
 import frc.robot.CTRSwerve.CTRSwerveDrivetrain;
+import frc.robot.CTRSwerve.SwerveDriveConstantsCreator;
 import frc.robot.CTRSwerve.SwerveDriveTrainConstants;
 import frc.robot.CTRSwerve.SwerveModuleConstants;
 
@@ -38,6 +38,9 @@ public class Robot extends TimedRobot {
         driveGains.kP = 1;
     }
 
+    SwerveDriveConstantsCreator m_constantsCreator =
+            new SwerveDriveConstantsCreator(10, 12.8, 3, 17, steerGains, driveGains);
+
     /**
      * Note: WPI's coordinate system is X forward, Y to the left so make sure all locations are with
      * respect to this coordinate system
@@ -45,58 +48,18 @@ public class Robot extends TimedRobot {
      * <p>This particular drive base is 22" x 22"
      */
     SwerveModuleConstants frontRight =
-            new SwerveModuleConstants()
-                    .withDriveMotorId(1)
-                    .withSteerMotorId(0)
-                    .withCANcoderId(0)
-                    .withCANcoderOffset(-0.538818)
-                    .withDriveMotorGearRatio(10)
-                    .withWheelRadius(3)
-                    .withLocationX(Units.inchesToMeters(22.0 / 2.0))
-                    .withLocationY(Units.inchesToMeters(-22.0 / 2.0))
-                    .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains)
-                    .withSlipCurrent(17);
+            m_constantsCreator.createModuleConstants(
+                    0, 1, 0, -0.538818, Units.inchesToMeters(22.0 / 2.0), Units.inchesToMeters(-22.0 / 2.0));
 
     SwerveModuleConstants frontLeft =
-            new SwerveModuleConstants()
-                    .withDriveMotorId(3)
-                    .withSteerMotorId(2)
-                    .withCANcoderId(1)
-                    .withCANcoderOffset(-0.474609)
-                    .withDriveMotorGearRatio(10)
-                    .withWheelRadius(3)
-                    .withLocationX(Units.inchesToMeters(22.0 / 2.0))
-                    .withLocationY(Units.inchesToMeters(22.0 / 2.0))
-                    .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains)
-                    .withSlipCurrent(17);
+            m_constantsCreator.createModuleConstants(
+                    2, 3, 1, -0.474609, Units.inchesToMeters(22.0 / 2.0), Units.inchesToMeters(22.0 / 2.0));
     SwerveModuleConstants backRight =
-            new SwerveModuleConstants()
-                    .withDriveMotorId(5)
-                    .withSteerMotorId(4)
-                    .withCANcoderId(2)
-                    .withCANcoderOffset(-0.928467)
-                    .withDriveMotorGearRatio(10)
-                    .withWheelRadius(3)
-                    .withLocationX(Units.inchesToMeters(-22.0 / 2.0))
-                    .withLocationY(Units.inchesToMeters(-22.0 / 2.0))
-                    .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains)
-                    .withSlipCurrent(17);
+            m_constantsCreator.createModuleConstants(
+                    4, 5, 2, -0.928467, Units.inchesToMeters(-22.0 / 2.0), Units.inchesToMeters(-22.0 / 2.0));
     SwerveModuleConstants backLeft =
-            new SwerveModuleConstants()
-                    .withDriveMotorId(7)
-                    .withSteerMotorId(6)
-                    .withCANcoderId(3)
-                    .withCANcoderOffset(-0.756348)
-                    .withDriveMotorGearRatio(10)
-                    .withWheelRadius(3)
-                    .withLocationX(Units.inchesToMeters(-22.0 / 2.0))
-                    .withLocationY(Units.inchesToMeters(22.0 / 2.0))
-                    .withSteerMotorGains(steerGains)
-                    .withDriveMotorGains(driveGains)
-                    .withSlipCurrent(17);
+            m_constantsCreator.createModuleConstants(
+                    6, 7, 3, -0.756348, Units.inchesToMeters(-22.0 / 2.0), Units.inchesToMeters(22.0 / 2.0));
 
     CTRSwerveDrivetrain m_drivetrain =
             new CTRSwerveDrivetrain(drivetrain, frontLeft, frontRight, backLeft, backRight);
@@ -149,7 +112,7 @@ public class Robot extends TimedRobot {
             m_drivetrain.driveStopMotion();
         } else {
             /* If we're fully field centric, we need to be pretty deflected to target an angle */
-            if(Math.abs(rightX) > 0.7 || Math.abs(rightY) > 0.7) {
+            if (Math.abs(rightX) > 0.7 || Math.abs(rightY) > 0.7) {
                 m_lastTargetAngle = new Rotation2d(rightY, -rightX);
             }
             m_drivetrain.driveFullyFieldCentric(leftY * 1, leftX * -1, m_lastTargetAngle);

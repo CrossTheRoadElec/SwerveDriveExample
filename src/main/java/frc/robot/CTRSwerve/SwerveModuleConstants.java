@@ -33,9 +33,7 @@ public class SwerveModuleConstants {
     /** The drive motor gains */
     public Slot0Configs DriveMotorGains = new Slot0Configs();
 
-    /**
-     * The maximum amount of current the drive motors can apply without slippage
-     */
+    /** The maximum amount of current the drive motors can apply without slippage */
     public double SlipCurrent = 400;
 
     public SwerveModuleConstants withDriveMotorId(int id) {

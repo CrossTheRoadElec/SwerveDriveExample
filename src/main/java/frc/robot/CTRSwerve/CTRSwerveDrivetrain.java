@@ -2,7 +2,6 @@ package frc.robot.CTRSwerve;
 
 import com.ctre.phoenixpro.BaseStatusSignalValue;
 import com.ctre.phoenixpro.hardware.Pigeon2;
-
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -134,9 +133,12 @@ public class CTRSwerveDrivetrain {
 
     public void driveFullyFieldCentric(double xSpeeds, double ySpeeds, Rotation2d targetAngle) {
         var currentAngle = m_pigeon2.getRotation2d();
-        double rotationalSpeed = m_turnPid.calculate(currentAngle.getRadians(), targetAngle.getRadians());
+        double rotationalSpeed =
+                m_turnPid.calculate(currentAngle.getRadians(), targetAngle.getRadians());
 
-        var roboCentric = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeeds, ySpeeds, rotationalSpeed, m_pigeon2.getRotation2d());
+        var roboCentric =
+                ChassisSpeeds.fromFieldRelativeSpeeds(
+                        xSpeeds, ySpeeds, rotationalSpeed, m_pigeon2.getRotation2d());
         var swerveStates = m_kinematics.toSwerveModuleStates(roboCentric);
         for (int i = 0; i < ModuleCount; ++i) {
             m_modules[i].apply(swerveStates[i]);
