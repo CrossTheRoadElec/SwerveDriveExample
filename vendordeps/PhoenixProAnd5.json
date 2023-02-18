@@ -1,12 +1,11 @@
 {
     "fileName": "PhoenixProAnd5.json",
     "name": "CTRE-Phoenix (Pro And v5)",
-    "version": "23.42+",
+    "version": "23.0.8",
     "frcYear": 2023,
     "uuid": "3fcf3402-e646-4fa6-971e-18afe8173b1a",
     "mavenUrls": [
-        "https://maven.ctr-electronics.com/release/",
-        "C:/users/cory/releases/maven/development"
+        "https://maven.ctr-electronics.com/release/"
     ],
     "jsonUrl": "https://maven.ctr-electronics.com/release/com/ctre/phoenixpro/PhoenixProAnd5-frc2023-latest.json",
     "javaDependencies": [
@@ -23,7 +22,7 @@
         {
             "groupId": "com.ctre.phoenixpro",
             "artifactId": "wpiapi-java",
-            "version": "23.42+"
+            "version": "23.0.8"
         }
     ],
     "jniDependencies": [
@@ -56,7 +55,7 @@
         {
             "groupId": "com.ctre.phoenixpro",
             "artifactId": "tools",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -69,7 +68,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "tools-sim",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -82,7 +81,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simTalonSRX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -95,7 +94,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simTalonFX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -108,7 +107,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simVictorSPX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -121,7 +120,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simPigeonIMU",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -134,7 +133,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simCANCoder",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -147,7 +146,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simProTalonFX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -160,7 +159,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simProCANcoder",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -173,7 +172,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simProPigeon2",
-            "version": "23.42+",
+            "version": "23.0.8",
             "isJar": false,
             "skipInvalidPlatforms": true,
             "validPlatforms": [
@@ -233,7 +232,7 @@
         {
             "groupId": "com.ctre.phoenixpro",
             "artifactId": "tools",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_PhoenixTools",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -293,7 +292,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "tools-sim",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_PhoenixTools_Sim",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -308,7 +307,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simTalonSRX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimTalonSRX",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -323,7 +322,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simTalonFX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimTalonFX",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -338,7 +337,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simVictorSPX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimVictorSPX",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -353,7 +352,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simPigeonIMU",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimPigeonIMU",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -368,7 +367,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simCANCoder",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimCANCoder",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -383,7 +382,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simProTalonFX",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimProTalonFX",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -398,7 +397,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simProCANcoder",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimProCANcoder",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -413,7 +412,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "simProPigeon2",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_SimProPigeon2",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -428,7 +427,7 @@
         {
             "groupId": "com.ctre.phoenixpro",
             "artifactId": "wpiapi-cpp",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_PhoenixPro_WPI",
             "headerClassifier": "headers",
             "sharedLibrary": true,
@@ -443,7 +442,7 @@
         {
             "groupId": "com.ctre.phoenixpro.sim",
             "artifactId": "wpiapi-cpp-sim",
-            "version": "23.42+",
+            "version": "23.0.8",
             "libName": "CTRE_PhoenixPro_WPISim",
             "headerClassifier": "headers",
             "sharedLibrary": true,
