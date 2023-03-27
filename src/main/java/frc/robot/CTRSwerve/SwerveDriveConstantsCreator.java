@@ -17,13 +17,17 @@ public class SwerveDriveConstantsCreator {
     /** The drive motor gains */
     public Slot0Configs DriveMotorGains;
 
+    /** True if the steering motor is reversed from the CANcoder */
+    public boolean SteerMotorReversed;
+
     public SwerveDriveConstantsCreator(
             double swerveModuleDriveRatio,
             double swerveModuleSteerRatio,
             double swerveModuleWheelRadius,
             double swerveModuleSlipCurrent,
             Slot0Configs swerveModuleSteerGains,
-            Slot0Configs swerveModuleDriveGains) {
+            Slot0Configs swerveModuleDriveGains,
+            boolean SteerMotorReversed) {
         this.DriveMotorGearRatio = swerveModuleDriveRatio;
         this.SteerMotorGearRatio = swerveModuleSteerRatio;
         this.WheelRadius = swerveModuleWheelRadius;
@@ -31,6 +35,7 @@ public class SwerveDriveConstantsCreator {
 
         this.SteerMotorGains = swerveModuleSteerGains;
         this.DriveMotorGains = swerveModuleDriveGains;
+        this.SteerMotorReversed = SteerMotorReversed;
     }
 
     public SwerveModuleConstants createModuleConstants(
@@ -52,6 +57,7 @@ public class SwerveDriveConstantsCreator {
                 .withWheelRadius(WheelRadius)
                 .withSlipCurrent(SlipCurrent)
                 .withSteerMotorGains(SteerMotorGains)
-                .withDriveMotorGains(DriveMotorGains);
+                .withDriveMotorGains(DriveMotorGains)
+                .withSteerMotorReversed(SteerMotorReversed);
     }
 }

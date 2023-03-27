@@ -39,7 +39,15 @@ public class Robot extends TimedRobot {
     }
 
     SwerveDriveConstantsCreator m_constantsCreator =
-            new SwerveDriveConstantsCreator(10, 12.8, 3, 17, steerGains, driveGains);
+            new SwerveDriveConstantsCreator(
+                    10, // 10:1 ratio for the drive motor
+                    12.8, // 12.8:1 ratio for the steer motor
+                    3, // 3 inch radius for the wheels
+                    17, // Only apply 17 stator amps to prevent slip
+                    steerGains, // Use the specified steer gains
+                    driveGains, // Use the specified drive gains
+                    false // CANcoder not reversed from the steer motor. For WCP Swerve X this should be true.
+                    );
 
     /**
      * Note: WPI's coordinate system is X forward, Y to the left so make sure all locations are with

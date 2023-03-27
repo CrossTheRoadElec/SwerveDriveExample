@@ -36,6 +36,9 @@ public class SwerveModuleConstants {
     /** The maximum amount of current the drive motors can apply without slippage */
     public double SlipCurrent = 400;
 
+    /** True if the steering motor is reversed from the CANcoder */
+    public boolean SteerMotorReversed = false;
+
     public SwerveModuleConstants withDriveMotorId(int id) {
         this.DriveMotorId = id;
         return this;
@@ -93,6 +96,11 @@ public class SwerveModuleConstants {
 
     public SwerveModuleConstants withSlipCurrent(double slipCurrent) {
         this.SlipCurrent = slipCurrent;
+        return this;
+    }
+
+    public SwerveModuleConstants withSteerMotorReversed(boolean steerMotorReversed) {
+        this.SteerMotorReversed = steerMotorReversed;
         return this;
     }
 }
