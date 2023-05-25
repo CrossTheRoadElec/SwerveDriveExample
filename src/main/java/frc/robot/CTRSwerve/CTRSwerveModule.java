@@ -1,16 +1,16 @@
 package frc.robot.CTRSwerve;
 
-import com.ctre.phoenixpro.BaseStatusSignalValue;
-import com.ctre.phoenixpro.StatusSignalValue;
-import com.ctre.phoenixpro.configs.CANcoderConfiguration;
-import com.ctre.phoenixpro.configs.TalonFXConfiguration;
-import com.ctre.phoenixpro.configs.TorqueCurrentConfigs;
-import com.ctre.phoenixpro.controls.PositionVoltage;
-import com.ctre.phoenixpro.controls.VelocityTorqueCurrentFOC;
-import com.ctre.phoenixpro.hardware.CANcoder;
-import com.ctre.phoenixpro.hardware.TalonFX;
-import com.ctre.phoenixpro.signals.FeedbackSensorSourceValue;
-import com.ctre.phoenixpro.signals.InvertedValue;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.StatusSignal;
+import com.ctre.phoenix6.configs.CANcoderConfiguration;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
+import com.ctre.phoenix6.controls.PositionVoltage;
+import com.ctre.phoenix6.controls.VelocityTorqueCurrentFOC;
+import com.ctre.phoenix6.hardware.CANcoder;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
+import com.ctre.phoenix6.signals.InvertedValue;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -21,11 +21,11 @@ public class CTRSwerveModule {
     private TalonFX m_steerMotor;
     private CANcoder m_cancoder;
 
-    private StatusSignalValue<Double> m_drivePosition;
-    private StatusSignalValue<Double> m_driveVelocity;
-    private StatusSignalValue<Double> m_steerPosition;
-    private StatusSignalValue<Double> m_steerVelocity;
-    private BaseStatusSignalValue[] m_signals;
+    private StatusSignal<Double> m_drivePosition;
+    private StatusSignal<Double> m_driveVelocity;
+    private StatusSignal<Double> m_steerPosition;
+    private StatusSignal<Double> m_steerVelocity;
+    private BaseStatusSignal[] m_signals;
     private double m_driveRotationsPerMeter = 0;
 
     private PositionVoltage m_angleSetter = new PositionVoltage(0);
@@ -72,7 +72,7 @@ public class CTRSwerveModule {
         m_steerPosition = m_cancoder.getPosition();
         m_steerVelocity = m_cancoder.getVelocity();
 
-        m_signals = new BaseStatusSignalValue[4];
+        m_signals = new BaseStatusSignal[4];
         m_signals[0] = m_drivePosition;
         m_signals[1] = m_driveVelocity;
         m_signals[2] = m_steerPosition;
@@ -116,7 +116,7 @@ public class CTRSwerveModule {
         m_driveMotor.setControl(m_velocitySetter.withVelocity(velocityToSet));
     }
 
-    BaseStatusSignalValue[] getSignals() {
+    BaseStatusSignal[] getSignals() {
         return m_signals;
     }
 }

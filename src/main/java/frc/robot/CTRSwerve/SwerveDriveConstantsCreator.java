@@ -1,6 +1,6 @@
 package frc.robot.CTRSwerve;
 
-import com.ctre.phoenixpro.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 
 public class SwerveDriveConstantsCreator {
     /** Gear ratio between drive motor and wheel */

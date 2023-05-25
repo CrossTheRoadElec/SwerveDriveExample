@@ -1,7 +1,7 @@
 package frc.robot.CTRSwerve;
 
-import com.ctre.phoenixpro.BaseStatusSignalValue;
-import com.ctre.phoenixpro.hardware.Pigeon2;
+import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -29,14 +29,14 @@ public class CTRSwerveDrivetrain {
 
     /* Perform swerve module updates in a separate thread to minimize latency */
     private class OdometryThread extends Thread {
-        private BaseStatusSignalValue[] m_allSignals;
+        private BaseStatusSignal[] m_allSignals;
         public int SuccessfulDaqs = 0;
         public int FailedDaqs = 0;
 
         public OdometryThread() {
             super();
             // 4 signals for each module + 2 for Pigeon2
-            m_allSignals = new BaseStatusSignalValue[(ModuleCount * 4) + 2];
+            m_allSignals = new BaseStatusSignal[(ModuleCount * 4) + 2];
             for (int i = 0; i < ModuleCount; ++i) {
                 var signals = m_modules[i].getSignals();
                 m_allSignals[(i * 4) + 0] = signals[0];
@@ -52,7 +52,7 @@ public class CTRSwerveDrivetrain {
             /* Run as fast as possible, our signals will control the timing */
             while (true) {
                 /* Synchronously wait for all signals in drivetrain */
-                BaseStatusSignalValue.waitForAll(0.1, m_allSignals);
+                BaseStatusSignal.waitForAll(0.1, m_allSignals);
 
                 /* Get status of first element */
                 if (m_allSignals[0].getError().isOK()) {
@@ -67,7 +67,7 @@ public class CTRSwerveDrivetrain {
                 }
                 // Assume Pigeon2 is flat-and-level so latency compensation can be performed
                 double yawDegrees =
-                        BaseStatusSignalValue.getLatencyCompensatedValue(
+                        BaseStatusSignal.getLatencyCompensatedValue(
                                 m_pigeon2.getYaw(), m_pigeon2.getAngularVelocityZ());
 
                 m_odometry.update(Rotation2d.fromDegrees(yawDegrees), m_modulePositions);

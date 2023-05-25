@@ -4,7 +4,7 @@
 
 package frc.robot;
 
-import com.ctre.phoenixpro.configs.Slot0Configs;
+import com.ctre.phoenix6.configs.Slot0Configs;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.util.Units;
