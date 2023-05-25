@@ -84,20 +84,20 @@ public class CTRSwerveModule {
         m_driveRotationsPerMeter = rotationsPerWheelRotation / metersPerWheelRotation;
     }
 
-    public SwerveModulePosition getPosition() {
-        /* Refresh all signals */
-        m_drivePosition.refresh();
-        m_driveVelocity.refresh();
-        m_steerPosition.refresh();
-        m_steerVelocity.refresh();
+    public SwerveModulePosition getPosition(boolean refresh) {
+        if (refresh) {
+            /* Refresh all signals */
+            m_drivePosition.refresh();
+            m_driveVelocity.refresh();
+            m_steerPosition.refresh();
+            m_steerVelocity.refresh();
+        }
 
         /* Now latency-compensate our signals */
         double drive_rot =
-                m_drivePosition.getValue()
-                        + (m_driveVelocity.getValue() * m_drivePosition.getTimestamp().getLatency());
+            BaseStatusSignal.getLatencyCompensatedValue(m_drivePosition, m_driveVelocity);
         double angle_rot =
-                m_steerPosition.getValue()
-                        + (m_steerVelocity.getValue() * m_steerPosition.getTimestamp().getLatency());
+            BaseStatusSignal.getLatencyCompensatedValue(m_steerPosition, m_steerVelocity);
 
         /* And push them into a SwerveModuleState object to return */
         m_internalState.distanceMeters = drive_rot / m_driveRotationsPerMeter;

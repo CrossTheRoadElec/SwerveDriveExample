@@ -1,8 +1,10 @@
 package frc.robot.CTRSwerve;
 
 import com.ctre.phoenix6.BaseStatusSignal;
+import com.ctre.phoenix6.Utils;
 import com.ctre.phoenix6.hardware.Pigeon2;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.filter.LinearFilter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -11,6 +13,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -26,12 +29,28 @@ public class CTRSwerveDrivetrain {
     private OdometryThread m_odometryThread;
     private Field2d m_field;
     private PIDController m_turnPid;
+    private Notifier m_telemetry;
+
+    /* Put smartdashboard calls in separate thread to reduce performance impact */
+    private void telemeterize() {
+        SmartDashboard.putNumber("Successful Daqs", m_odometryThread.getSuccessfulDaqs());
+        SmartDashboard.putNumber("Failed Daqs", m_odometryThread.getFailedDaqs());
+        SmartDashboard.putNumber("X Pos", m_odometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("Y Pos", m_odometry.getPoseMeters().getY());
+        SmartDashboard.putNumber("Angle", m_odometry.getPoseMeters().getRotation().getDegrees());
+        SmartDashboard.putNumber("Odometry Loop Time", m_odometryThread.getTime());
+    }
 
     /* Perform swerve module updates in a separate thread to minimize latency */
     private class OdometryThread extends Thread {
         private BaseStatusSignal[] m_allSignals;
         public int SuccessfulDaqs = 0;
         public int FailedDaqs = 0;
+
+        private LinearFilter lowpass = LinearFilter.movingAverage(50);
+        private double lastTime = 0;
+        private double currentTime = 0;
+        private double averageLoopTime = 0;
 
         public OdometryThread() {
             super();
@@ -48,14 +67,22 @@ public class CTRSwerveDrivetrain {
             m_allSignals[m_allSignals.length - 1] = m_pigeon2.getAngularVelocityZ();
         }
 
+        @Override
         public void run() {
+            /* Make sure all signals update at around 250hz */
+            for (var sig : m_allSignals) {
+                sig.setUpdateFrequency(250);
+            }
             /* Run as fast as possible, our signals will control the timing */
             while (true) {
                 /* Synchronously wait for all signals in drivetrain */
-                BaseStatusSignal.waitForAll(0.1, m_allSignals);
+                var status = BaseStatusSignal.waitForAll(0.1, m_allSignals);
+                lastTime = currentTime;
+                currentTime = Utils.getCurrentTimeSeconds();
+                averageLoopTime = lowpass.calculate(currentTime - lastTime);
 
-                /* Get status of first element */
-                if (m_allSignals[0].getError().isOK()) {
+                /* Get status of the waitForAll */
+                if (status.isOK()) {
                     SuccessfulDaqs++;
                 } else {
                     FailedDaqs++;
@@ -63,7 +90,8 @@ public class CTRSwerveDrivetrain {
 
                 /* Now update odometry */
                 for (int i = 0; i < ModuleCount; ++i) {
-                    m_modulePositions[i] = m_modules[i].getPosition();
+                    /* No need to refresh since it's automatically refreshed from the waitForAll() */
+                    m_modulePositions[i] = m_modules[i].getPosition(false);
                 }
                 // Assume Pigeon2 is flat-and-level so latency compensation can be performed
                 double yawDegrees =
@@ -72,13 +100,19 @@ public class CTRSwerveDrivetrain {
 
                 m_odometry.update(Rotation2d.fromDegrees(yawDegrees), m_modulePositions);
                 m_field.setRobotPose(m_odometry.getPoseMeters());
-
-                SmartDashboard.putNumber("Successful Daqs", SuccessfulDaqs);
-                SmartDashboard.putNumber("Failed Daqs", FailedDaqs);
-                SmartDashboard.putNumber("X Pos", m_odometry.getPoseMeters().getX());
-                SmartDashboard.putNumber("Y Pos", m_odometry.getPoseMeters().getY());
-                SmartDashboard.putNumber("Angle", m_odometry.getPoseMeters().getRotation().getDegrees());
             }
+        }
+        
+        public double getTime() {
+            return averageLoopTime;
+        }
+
+        public int getSuccessfulDaqs() {
+            return SuccessfulDaqs;
+        }
+
+        public int getFailedDaqs() {
+            return FailedDaqs;
         }
     }
 
@@ -96,7 +130,7 @@ public class CTRSwerveDrivetrain {
         for (SwerveModuleConstants module : modules) {
             m_modules[iteration] = new CTRSwerveModule(module, driveTrainConstants.CANbusName);
             m_moduleLocations[iteration] = new Translation2d(module.LocationX, module.LocationY);
-            m_modulePositions[iteration] = m_modules[iteration].getPosition();
+            m_modulePositions[iteration] = m_modules[iteration].getPosition(true);
 
             iteration++;
         }
@@ -111,6 +145,9 @@ public class CTRSwerveDrivetrain {
 
         m_odometryThread = new OdometryThread();
         m_odometryThread.start();
+
+        m_telemetry = new Notifier(this::telemeterize);
+        m_telemetry.startPeriodic(0.1); // Telemeterize every 100ms
     }
 
     private SwerveModulePosition[] getSwervePositions() {
