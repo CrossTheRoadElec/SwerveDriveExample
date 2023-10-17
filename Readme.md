@@ -1,3 +1,11 @@
+# This Repo is Archived
+
+The example code has been moved to the Phoenix 6 Examples repo.
+https://github.com/CrossTheRoadElec/Phoenix6-Examples/tree/main/java/SwerveWithPathPlanner
+
+Also check out Tuner X's Swerve drive generator along with Phoenix 6's new Swerve API
+https://pro.docs.ctr-electronics.com/en/latest/docs/api-reference/api-usage/swerve/swerve-overview.html
+
 # Swerve Drive Robot
 
 This contains the code for the Swerve Drive robot, using SDS MK4 modules along with 4 CANdles for underglow on each side.
